@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+//http://www.omdbapi.com/apikey.aspx?VERIFYKEY=bb659812-49aa-479a-8c56-3de0dff9698e
 const tempMovieData = [
   {
     imdbID: "tt1375666",
