@@ -6,7 +6,7 @@ import {
   Main,
   MovieList,
   Navbar,
-  SelectMovie,
+  MovieDetails,
   WatchedMovieList,
   Search,
   WatchedSummery,
@@ -21,9 +21,30 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectMovie, setSelectMovie] = useState(null);
+  const [details, setDetails] = useState(null);
 
   function handleSelectMovie(id) {
     setSelectMovie((prev) => (prev === id ? null : id));
+  }
+  useEffect(() => {
+    fetchByID();
+    // console.log(details);
+  }, selectMovie);
+
+  async function fetchByID() {
+    try {
+      const res = await fetch(
+        `http://www.omdbapi.com/?i=${selectMovie}&apikey=${KEY}`
+      );
+      const jsonRes = await res.json();
+      if (jsonRes) {
+        setDetails(jsonRes);
+      } else {
+        setDetails(null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async function fetchData() {
@@ -73,7 +94,7 @@ export default function App() {
         <Box>
           {/* {selectMovie && } */}
           {selectMovie ? (
-            <SelectMovie selectMovie={selectMovie} />
+            <MovieDetails selectMovie={selectMovie} details={details} />
           ) : (
             <>
               <WatchedSummery watched={watched} />

@@ -4,7 +4,7 @@ import Logo from "./Logo";
 import Main from "./Main";
 import Navbar from "./Navbar";
 import MovieList from "./MovieList";
-import SelectMovie from "./SelectMovie";
+import MovieDetails from "./MovieDetails";
 import WatchedMovieList from "./WatchedMovieList";
 import WatchedSummery from "./WatchedSummery";
 import Search from "./Search";
@@ -16,7 +16,7 @@ export {
   Main,
   MovieList,
   Navbar,
-  SelectMovie,
+  MovieDetails,
   WatchedMovieList,
   WatchedSummery,
   NumResults,
