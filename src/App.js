@@ -13,7 +13,7 @@ import {
   Search,
 } from "./components";
 const KEY = "ede561ab";
-
+// new comment by Me
 export default function App() {
   const [query, setQuery] = useState("test");
   const [movies, setMovies] = useState();
