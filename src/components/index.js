@@ -9,6 +9,7 @@ import WatchedMovieList from "./WatchedMovieList";
 import WatchedSummery from "./WatchedSummery";
 import Search from "./Search";
 import NumResults from "./NumResults";
+import ErrorMessage from "./ErrorMessage";
 export {
   Box,
   Loader,
@@ -21,4 +22,5 @@ export {
   WatchedSummery,
   NumResults,
   Search,
+  ErrorMessage,
 };

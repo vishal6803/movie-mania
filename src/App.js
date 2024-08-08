@@ -11,39 +11,23 @@ import {
   WatchedSummery,
   NumResults,
   Search,
+  ErrorMessage,
 } from "./components";
 const KEY = "ede561ab";
 // new comment by Me
 export default function App() {
   const [query, setQuery] = useState("test");
-  const [movies, setMovies] = useState();
+  const [movies, setMovies] = useState(null);
   const [watched, setWatched] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectMovie, setSelectMovie] = useState(null);
-  const [details, setDetails] = useState(null);
 
   function handleSelectMovie(id) {
     setSelectMovie((prev) => (prev === id ? null : id));
   }
-  useEffect(() => {
-    fetchByID();
-  }, selectMovie);
-
-  async function fetchByID() {
-    try {
-      const res = await fetch(
-        `http://www.omdbapi.com/?i=${selectMovie}&apikey=${KEY}`
-      );
-      const jsonRes = await res.json();
-      if (jsonRes) {
-        setDetails(jsonRes);
-      } else {
-        setDetails(null);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  function handleCloseBtn() {
+    setSelectMovie(null);
   }
 
   async function fetchData() {
@@ -62,29 +46,44 @@ export default function App() {
       if (jsonRes.Search) {
         setLoading(false);
         setMovies(jsonRes.Search);
+        setLoading(false);
       } else {
         setMovies([]);
+        if (jsonRes.Response === "False") throw new Error(jsonRes.Error);
       }
     } catch (error) {
-      console.log(error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   }
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
   return (
     <>
       <Navbar>
         <Logo />
-        <Search query={query} />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
       <Main>
-        <Box>{loading && <MovieList movies={movies} />}</Box>
+        <Box>
+          {!loading && !error && (
+            <MovieList onSelectMovie={handleSelectMovie} movies={movies} />
+          )}
+          {loading && <Loader />}
+          {error && <ErrorMessage message={error} />}
+        </Box>
         <Box>
           {/* {selectMovie && } */}
           {selectMovie ? (
-            <MovieDetails selectMovie={selectMovie} details={details} />
+            <MovieDetails
+              selectMovie={selectMovie}
+              onCloseMovie={handleCloseBtn}
+              key={selectMovie}
+            />
           ) : (
             <>
               <WatchedSummery watched={watched} />
