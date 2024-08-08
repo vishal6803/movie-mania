@@ -22,6 +22,14 @@ function MovieDetails({ onCloseMovie, selectMovie, onAddWatched }) {
   } = details;
 
   useEffect(() => {
+    if (!Title) return;
+    document.title = `Movie | ${Title}`;
+    return function () {
+      document.title = "Movie-Mania";
+    };
+  }, [Title]);
+
+  useEffect(() => {
     async function fetchByID() {
       try {
         setLoading(true);
