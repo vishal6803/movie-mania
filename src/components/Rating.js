@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 function Rating({
   maxRating = 5,
-  color = "#672882",
+  color = "#fcd53f",
   defaultValue = 0,
   onSetRating,
 }) {
@@ -19,7 +19,7 @@ function Rating({
     setTempRating(temp);
   }
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
+    <div style={{ display: "flex", alignItems: "center", margin: "0" }}>
       {Array.from({ length: maxRating }, (_, i) => (
         <Star
           setRating={() => handleSetRating(i + 1)}

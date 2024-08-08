@@ -30,6 +30,9 @@ export default function App() {
     setSelectMovie(null);
   }
 
+  function handleWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
   async function fetchData() {
     try {
       setLoading(true);
@@ -80,6 +83,7 @@ export default function App() {
           {/* {selectMovie && } */}
           {selectMovie ? (
             <MovieDetails
+              onAddWatched={handleWatched}
               selectMovie={selectMovie}
               onCloseMovie={handleCloseBtn}
               key={selectMovie}

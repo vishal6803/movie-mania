@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
 import Loader from "./Loader";
+import Rating from "./Rating";
 const KEY = "ede561ab";
 
-function MovieDetails({ onCloseMovie, selectMovie }) {
+function MovieDetails({ onCloseMovie, selectMovie, onAddWatched }) {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(false);
+  const [userRating, setUserRating] = useState(0);
 
-  const { Title, Poster, Released, Genre, imdbRating, Actors, Director, Plot } =
-    details;
+  const {
+    Title,
+    Poster,
+    Released,
+    Genre,
+    imdbRating,
+    Actors,
+    Director,
+    Plot,
+    Runtime,
+    imdbID,
+  } = details;
+
   useEffect(() => {
     async function fetchByID() {
       try {
@@ -28,8 +41,20 @@ function MovieDetails({ onCloseMovie, selectMovie }) {
       }
     }
     fetchByID();
-  }, []);
+  }, [selectMovie]);
   console.log(details);
+  function handleWatchList() {
+    const newMovie = {
+      imdbID,
+      Title,
+      userRating,
+      Actors,
+      Poster,
+      imdbRating: Number(imdbRating),
+      Runtime: Number(Runtime.split(" ").at(0)),
+    };
+    onAddWatched(newMovie);
+  }
 
   return (
     <div className="details">
@@ -44,7 +69,9 @@ function MovieDetails({ onCloseMovie, selectMovie }) {
             <img src={Poster} alt={`${Title} Poster`} />
             <div className="details-overview">
               <h2>{Title}</h2>
-              <p>{Released}</p>
+              <p>
+                {Released}. {Runtime}
+              </p>
               <p>{Genre}</p>
               <p>
                 <span>⭐</span>
@@ -53,6 +80,12 @@ function MovieDetails({ onCloseMovie, selectMovie }) {
             </div>
           </header>
           <section>
+            <div className="rating">
+              <Rating maxRating={10} onSetRating={setUserRating} />
+              <button className="btn-add" onClick={handleWatchList}>
+                +Add To WatchList
+              </button>
+            </div>
             <p>
               <em>{Plot}</em>
             </p>
