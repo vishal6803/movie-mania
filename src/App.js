@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useMovies, useLocalStorage, useKey } from "./hooks";
 import {
   Box,
   Loader,
@@ -13,21 +14,12 @@ import {
   Search,
   ErrorMessage,
 } from "./components";
-const KEY = "ede561ab";
-// new comment by Me
+
 export default function App() {
-  const controller = new AbortController();
-  const [query, setQuery] = useState("test");
-  const [movies, setMovies] = useState(null);
-
-  const [watched, setWatched] = useState(function () {
-    const storedData = localStorage.getItem("watched");
-    return [] || JSON.parse(storedData);
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
   const [selectMovie, setSelectMovie] = useState(null);
-
+  const [watched, setWatched] = useLocalStorage([], "watched");
+  const { movies, error, loading } = useMovies(query, handleCloseBtn);
   function handleSelectMovie(id) {
     setSelectMovie((prev) => (prev === id ? null : id));
   }
@@ -41,47 +33,8 @@ export default function App() {
   function handleClose(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+  useKey("Escape", handleClose);
 
-  async function fetchData() {
-    try {
-      setLoading(true);
-      if (query.length < 2) {
-        setLoading(false);
-      }
-      const res = await fetch(
-        `http://www.omdbapi.com/?s=${query}&apikey=${KEY}`,
-        { signal: controller.signal }
-      );
-      if (!res.ok) {
-        throw new Error("Faiiled to Fetch");
-      }
-      const jsonRes = await res.json();
-      if (jsonRes.Search) {
-        setLoading(false);
-        setMovies(jsonRes.Search);
-        setLoading(false);
-      } else {
-        setMovies([]);
-        if (jsonRes.Response === "False") throw new Error(jsonRes.Error);
-      }
-    } catch (error) {
-      if (error === "AbortError") setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    localStorage.setItem("watched", JSON.stringify(watched));
-  }, [watched]);
-
-  useEffect(() => {
-    fetchData();
-    return function () {
-      controller.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
   return (
     <>
       <Navbar>
