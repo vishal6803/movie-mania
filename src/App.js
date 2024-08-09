@@ -33,7 +33,7 @@ export default function App() {
   function handleClose(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-  useKey("Escape", handleClose);
+  useKey("Escape", handleSelectMovie);
 
   return (
     <>
