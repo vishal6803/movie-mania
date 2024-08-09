@@ -1,9 +1,9 @@
 import React from "react";
 
-function WatchedMovieList({ watched }) {
+function WatchedMovieList({ watched, onClose }) {
   return (
     <ul className="list list-movies">
-      {watched.map((movie) => (
+      {watched?.map((movie) => (
         <li key={movie.imdbID} className="">
           <img src={movie.Poster} alt={`${movie.Title} poster`} />
           <h3>{movie.Title}</h3>
@@ -21,6 +21,10 @@ function WatchedMovieList({ watched }) {
               <span>{movie.Runtime} min</span>
             </p>
           </div>
+          <button className="btn-delete" onClick={() => onClose(movie.imdbID)}>
+            {" "}
+            &times;
+          </button>
         </li>
       ))}
     </ul>

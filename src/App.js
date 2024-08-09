@@ -16,9 +16,14 @@ import {
 const KEY = "ede561ab";
 // new comment by Me
 export default function App() {
+  const controller = new AbortController();
   const [query, setQuery] = useState("test");
   const [movies, setMovies] = useState(null);
-  const [watched, setWatched] = useState([]);
+
+  const [watched, setWatched] = useState(function () {
+    const storedData = localStorage.getItem("watched");
+    return [] || JSON.parse(storedData);
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectMovie, setSelectMovie] = useState(null);
@@ -33,6 +38,10 @@ export default function App() {
   function handleWatched(movie) {
     setWatched((watched) => [...watched, movie]);
   }
+  function handleClose(id) {
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
+  }
+
   async function fetchData() {
     try {
       setLoading(true);
@@ -40,7 +49,8 @@ export default function App() {
         setLoading(false);
       }
       const res = await fetch(
-        `http://www.omdbapi.com/?s=${query}&apikey=${KEY}`
+        `http://www.omdbapi.com/?s=${query}&apikey=${KEY}`,
+        { signal: controller.signal }
       );
       if (!res.ok) {
         throw new Error("Faiiled to Fetch");
@@ -55,13 +65,21 @@ export default function App() {
         if (jsonRes.Response === "False") throw new Error(jsonRes.Error);
       }
     } catch (error) {
-      setError(error.message);
+      if (error === "AbortError") setError(error.message);
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }, [watched]);
+
   useEffect(() => {
     fetchData();
+    return function () {
+      controller.abort();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
   return (
@@ -87,11 +105,16 @@ export default function App() {
               selectMovie={selectMovie}
               onCloseMovie={handleCloseBtn}
               key={selectMovie}
+              watched={watched}
             />
           ) : (
             <>
               <WatchedSummery watched={watched} />
-              <WatchedMovieList watched={watched} selectMovie={selectMovie} />
+              <WatchedMovieList
+                watched={watched}
+                selectMovie={selectMovie}
+                onClose={handleClose}
+              />
             </>
           )}
         </Box>

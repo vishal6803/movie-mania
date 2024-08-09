@@ -3,10 +3,15 @@ import Loader from "./Loader";
 import Rating from "./Rating";
 const KEY = "ede561ab";
 
-function MovieDetails({ onCloseMovie, selectMovie, onAddWatched }) {
+function MovieDetails({ onCloseMovie, selectMovie, onAddWatched, watched }) {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(false);
   const [userRating, setUserRating] = useState(0);
+  const isWatched = watched?.map((movie) => movie.imdbID).includes(selectMovie);
+  const givenRating = watched?.find(
+    (movie) => movie.imdbID === selectMovie
+  )?.userRating;
+  console.log(givenRating);
 
   const {
     Title,
@@ -89,10 +94,21 @@ function MovieDetails({ onCloseMovie, selectMovie, onAddWatched }) {
           </header>
           <section>
             <div className="rating">
-              <Rating maxRating={10} onSetRating={setUserRating} />
-              <button className="btn-add" onClick={handleWatchList}>
-                +Add To WatchList
-              </button>
+              {!isWatched ? (
+                <>
+                  <Rating maxRating={10} onSetRating={setUserRating} />
+                  {userRating > 0 && (
+                    <button className="btn-add" onClick={handleWatchList}>
+                      +Add To WatchList
+                    </button>
+                  )}{" "}
+                </>
+              ) : (
+                <p>
+                  Yoy Rated This Movie {givenRating}
+                  <span>⭐</span>
+                </p>
+              )}
             </div>
             <p>
               <em>{Plot}</em>
